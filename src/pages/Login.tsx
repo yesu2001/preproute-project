@@ -43,7 +43,7 @@ export default function Login() {
         <img src="/src/assets/login-bg.png" alt="login illustration" />
       </div>
 
-      <div className="w-1/2">
+      <div className="w-full md:w-1/2">
         <div className="w-full h-full bg-white rounded-2xl shadow-sm p-10 md:p-24 flex flex-col justify-center">
           {/* Logo */}
           <div className="mb-10 flex items-center gap-1">

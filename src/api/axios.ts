@@ -26,4 +26,6 @@ api.interceptors.response.use(
   },
 );
 
+export const USE_MOCK = true;
+
 export default api;
