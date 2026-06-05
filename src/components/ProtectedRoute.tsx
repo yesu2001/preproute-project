@@ -179,7 +179,7 @@ const ProtectedRoute = () => {
           </div>
         </header>
 
-        <main className="flex-1 p-2 md:p-6 max-w-7xl w-full mx-auto">
+        <main className="flex-1 max-w-7xl w-full mx-auto">
           <Outlet />
         </main>
       </div>

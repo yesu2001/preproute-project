@@ -132,7 +132,7 @@ export default function Dashboard() {
   // };
 
   return (
-    <div className="p-0 max-w-7xl w-full mx-auto flex-1 space-y-6">
+    <div className="p-2 md:p-6 max-w-7xl w-full mx-auto flex-1 space-y-6">
       {/* Dashboard Dynamic Row Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <h1 className="font-medium text-lg text-slate-800">Dashboard</h1>
