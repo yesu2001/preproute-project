@@ -1,17 +1,18 @@
 import api from "./axios";
 import { USE_MOCK } from "./axios";
-import { mockQuestions } from "./mock";
+import { getStoredQuestions, saveQuestions } from "../utils/storage";
 import type { ApiResponse, Question } from "../types";
-
-let localQuestions = [...mockQuestions];
 
 export const bulkCreateQuestions = async (questions: Question[]) => {
   if (USE_MOCK) {
+    if (questions.length === 0) return { success: true, data: [] };
+    const testId = questions[0].test_id;
+    const existing = getStoredQuestions(testId);
     const created = questions.map((q, i) => ({
       ...q,
       id: `q-${Date.now()}-${i}`,
     }));
-    localQuestions.push(...created);
+    saveQuestions(testId, [...existing, ...created]);
     return {
       success: true,
       data: created,
@@ -26,8 +27,21 @@ export const bulkCreateQuestions = async (questions: Question[]) => {
 
 export const fetchBulkQuestions = async (question_ids: string[]) => {
   if (USE_MOCK) {
-    const found = localQuestions.filter((q) => question_ids.includes(q.id!));
-    return { success: true, data: found };
+    // Search across all stored questions
+    const allKeys = Object.keys(localStorage).filter((k) =>
+      k.startsWith("preproute_questions_"),
+    );
+    const allQuestions: Question[] = allKeys.flatMap((key) => {
+      try {
+        return JSON.parse(localStorage.getItem(key) || "[]");
+      } catch {
+        return [];
+      }
+    });
+    return {
+      success: true,
+      data: allQuestions.filter((q) => question_ids.includes(q.id!)),
+    };
   }
   const res = await api.post<ApiResponse<Question[]>>("/questions/fetchBulk", {
     question_ids,
