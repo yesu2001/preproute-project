@@ -29,7 +29,6 @@ export default function CreateTestForm({
 }: CreateTestFormProps) {
   const testTypeOptions = [
     { value: "chapterwise", label: "Chapterwise" },
-    { value: "full_test", label: "Full Test" },
     { value: "topicwise", label: "Topicwise" },
   ];
 

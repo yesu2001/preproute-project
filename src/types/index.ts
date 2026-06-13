@@ -22,16 +22,18 @@ export interface SubTopic {
   topic_id: string;
 }
 
+export type TestType = "chapterwise" | "topicwise";
+export type TestDifficulty = "easy" | "medium" | "difficult";
 export type TestStatus = "draft" | "live" | "scheduled" | null;
 
 export interface Test {
   id?: string;
   name: string;
-  type: string;
+  type: TestType;
   subject: string;
   topics: string[];
   sub_topics?: string[];
-  difficulty: string;
+  difficulty: TestDifficulty;
   correct_marks: number;
   wrong_marks: number;
   unattempt_marks: number;

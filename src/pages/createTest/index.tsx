@@ -8,7 +8,14 @@ import {
   getTopicsBySubject,
   getSubTopicsByTopics,
 } from "../../api/subjects";
-import type { Subject, Topic, SubTopic, TestStatus } from "../../types";
+import type {
+  Subject,
+  Topic,
+  SubTopic,
+  TestStatus,
+  TestType,
+  TestDifficulty,
+} from "../../types";
 import { createTest } from "../../api/tests";
 
 export default function CreateTest() {
@@ -28,11 +35,11 @@ export default function CreateTest() {
     formState: { errors },
   } = useForm<{
     name: string;
-    type: string;
+    type: TestType;
     subject: string;
     topics: string[];
     sub_topics: string[];
-    difficulty: string;
+    difficulty: TestDifficulty;
     correct_marks: number;
     wrong_marks: number;
     unattempt_marks: number;
