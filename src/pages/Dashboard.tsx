@@ -51,9 +51,9 @@ export default function Dashboard() {
     setLoading(true);
     // setError(null);
     try {
-      // const res = await getAllTests();
-      // setTests(res.data);
-      setTests(filteredTests);
+      const res = await getAllTests();
+      setTests(res.data);
+      // setTests(filteredTests);
     } catch {
       // setError("Failed to load tests. Please try again.");
       console.log("Failed to load tests. Please try again.");
@@ -152,7 +152,9 @@ export default function Dashboard() {
             </thead>
             <tbody className="divide-y divide-slate-100 text-sm text-slate-600">
               {loading ? (
-                <Spinner />
+                <div className="flex item-center justify-center">
+                  <Spinner />
+                </div>
               ) : filteredTests.length > 0 ? (
                 filteredTests.map((test) => (
                   <tr

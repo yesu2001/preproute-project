@@ -5,11 +5,10 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import { useAuthStore } from "./store/authStore.ts";
 import Login from "./pages/Login.tsx";
-import Dashboard from "./pages/Dashboard.tsx";
-// import Preview from "./pages/Preview.tsx";
 import CreateTest from "./pages/createTest/index.tsx";
 import Questions from "./pages/questions/index.tsx";
 import Preview from "./pages/preview/index.tsx";
+import Dashboard from "./pages/dashboard/index.tsx";
 
 const RootRedirect = () => {
   const token = useAuthStore((state) => state.token);

@@ -22,7 +22,7 @@ export interface SubTopic {
   topic_id: string;
 }
 
-export type TestStatus = "draft" | "live" | null;
+export type TestStatus = "draft" | "live" | "scheduled" | null;
 
 export interface Test {
   id?: string;
