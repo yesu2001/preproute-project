@@ -14,6 +14,7 @@ interface SelectInputProps {
   required?: boolean;
   placeholder?: string;
   disabled?: boolean;
+  multiple?: boolean;
 }
 
 const SelectInput = ({
@@ -21,20 +22,18 @@ const SelectInput = ({
   registration,
   options,
   error,
-  required = false,
   placeholder = "Choose from dropdown",
   disabled = false,
+  multiple = false,
 }: SelectInputProps) => {
   return (
     <div>
-      <label className="text-sm font-semibold text-slate-700">
-        {label}
-        {required && <span className="text-rose-500 ml-1">*</span>}
-      </label>
+      <label className="text-sm font-semibold text-slate-700">{label}</label>
       <div className="relative mt-3">
         <select
           {...registration}
           disabled={disabled}
+          multiple={multiple}
           className="w-full appearance-none border border-slate-200 rounded-lg px-4 py-3 text-sm text-slate-500 focus:ring-2 focus:ring-blue-100 focus:border-blue-300 outline-none transition-all disabled:bg-slate-50 disabled:cursor-not-allowed"
         >
           <option value="">{placeholder}</option>

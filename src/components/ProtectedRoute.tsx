@@ -10,13 +10,10 @@ const ProtectedRoute = () => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  console.log(token);
-  // 1. Guard check: If not authenticated, redirect to login page immediately
   if (!token) {
     return <Navigate to="/login" replace />;
   }
 
-  // 2. Sidebar items mapping to matching endpoints declared in main.ts
   const navItems = [
     {
       path: "/dashboard",
@@ -53,7 +50,6 @@ const ProtectedRoute = () => {
     },
   ];
 
-  // Helper function to keep "Test Creation" highlighted even when inside deep subpaths like questions or preview
   const isPathActive = (itemPath: string) => {
     if (itemPath === "/dashboard") return location.pathname === "/dashboard";
     if (itemPath === "/test/create")
@@ -64,7 +60,7 @@ const ProtectedRoute = () => {
   return (
     <div className="flex min-h-screen text-slate-800 antialiased font-sans">
       {/* --- DESKTOP SIDEBAR (Hidden on mobile screens, matches layout theme) --- */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col hidden md:flex fixed h-full z-20">
+      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between hidden md:flex fixed h-full z-20">
         <div className="p-6">
           <img src="/src/assets/logo.png" alt="Logo" className="h-8 w-auto" />
           <nav className="mt-10 space-y-1">
@@ -86,6 +82,11 @@ const ProtectedRoute = () => {
               );
             })}
           </nav>
+        </div>
+        <div className="p-6 border-t border-slate-200">
+          <button className="w-full bg-red-100 hover:bg-red-200 text-red-700 font-medium py-2 px-4 rounded-lg text-sm transition-colors cursor-pointer">
+            Logout
+          </button>
         </div>
       </aside>
 

@@ -25,7 +25,7 @@ export interface SubTopic {
 export type TestStatus = "draft" | "live" | null;
 
 export interface Test {
-  id: string;
+  id?: string;
   name: string;
   type: string;
   subject: string;
@@ -38,8 +38,8 @@ export interface Test {
   total_time: number;
   total_marks: number;
   total_questions: number;
-  status: TestStatus;
-  created_at: string;
+  status?: TestStatus;
+  created_at?: string;
   questions?: string[];
 }
 

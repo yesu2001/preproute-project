@@ -23,14 +23,14 @@ const RadioInput = ({
             className="flex items-center gap-2 cursor-pointer"
           >
             <div
-              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+              className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
                 selected === option.value
                   ? "border-blue-500"
                   : "border-slate-300"
               }`}
             >
               {selected === option.value && (
-                <div className="w-2.5 h-2.5 bg-blue-500 rounded-full" />
+                <div className="w-2 h-2 bg-blue-500 rounded-full" />
               )}
             </div>
             <input

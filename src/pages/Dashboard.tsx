@@ -100,7 +100,7 @@ export default function Dashboard() {
 
         <button
           onClick={onCreateNewTest}
-          className="flex items-center justify-center gap-2 px-3 py-2 bg-[#4E73F8] hover:bg-[#3B62E3] text-white font-medium text-sm rounded-lg shadow-sm transition-all"
+          className="flex items-center justify-center gap-2 px-3 py-2 bg-[#4E73F8] hover:bg-[#3B62E3] text-white font-medium text-sm rounded-lg cursor-pointer shadow-sm transition-all"
         >
           <Plus size={18} /> Create New Test
         </button>
