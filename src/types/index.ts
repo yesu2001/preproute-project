@@ -1,6 +1,8 @@
 export interface User {
   id: string;
   userId: string;
+  name: string;
+  role: string;
 }
 
 export interface Subject {

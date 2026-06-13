@@ -14,22 +14,33 @@ export default function Login() {
   const login = useAuthStore((state) => state.login);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [userId, setUserId] = useState("");
-  const [password, setPassword] = useState("");
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginForm>();
+  } = useForm<LoginForm>({
+    defaultValues: {
+      userId: "",
+      password: "",
+    },
+  });
 
   const onSubmit = async (data: LoginForm) => {
     setLoading(true);
     setError(null);
     try {
       const res = await loginApi(data.userId, data.password);
-      login(res.data.token, res.data.user);
-      navigate("/dashboard");
+      const responseUser = res.data.user as any;
+      const user = {
+        ...responseUser,
+        name: responseUser.name ?? "",
+        role: responseUser.role ?? "",
+      };
+      login(res.data.token, user);
+      if (res.data.token) {
+        navigate("/dashboard");
+      }
     } catch (error: any) {
       setError(error.message || "Invalid credentials. Please try again.");
     } finally {
@@ -77,8 +88,6 @@ export default function Login() {
                 {...register("userId", { required: "User ID is required" })}
                 type="text"
                 id="userId"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
                 placeholder="Enter User ID"
                 className="w-full px-4 py-3 rounded-lg border border-blue-400 bg-white text-slate-900 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-colors text-sm"
                 required
@@ -101,15 +110,13 @@ export default function Login() {
                 {...register("password", { required: "Password is required" })}
                 type="password"
                 id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter Password"
                 className="w-full px-4 py-3 rounded-lg border border-blue-400 bg-white text-slate-900 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-colors text-sm"
                 required
               />
               {errors.password && (
                 <p className="mt-1 text-xs text-red-500">
-                  {errors?.password?.message}
+                  {errors.password.message}
                 </p>
               )}
             </div>

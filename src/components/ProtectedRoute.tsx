@@ -10,6 +10,7 @@ const ProtectedRoute = () => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  console.log(token);
   // 1. Guard check: If not authenticated, redirect to login page immediately
   if (!token) {
     return <Navigate to="/login" replace />;
@@ -168,11 +169,11 @@ const ProtectedRoute = () => {
               />
               <div className="text-left hidden sm:block">
                 <div className="text-sm font-semibold text-slate-800 flex items-center gap-1">
-                  {user?.userId}{" "}
+                  {user?.name}{" "}
                   <ChevronDown size={14} className="text-slate-400" />
                 </div>
                 <div className="text-xs text-slate-400 font-medium -mt-0.5">
-                  Admin
+                  {user?.role}
                 </div>
               </div>
             </div>

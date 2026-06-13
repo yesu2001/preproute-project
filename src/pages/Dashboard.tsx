@@ -4,68 +4,22 @@ import { getAllTests, updateTest } from "../api/tests";
 import { useTestStore } from "../store/testStore";
 import { useAuthStore } from "../store/authStore";
 import type { Test } from "../types";
-// import React, { useState, useEffect } from 'react';
-import {
-  Plus,
-  Search,
-  Edit2,
-  Trash2,
-  Eye,
-  BookOpen,
-  Clock,
-  Layers,
-  Bell,
-  ChevronDown,
-} from "lucide-react";
+import { Plus, Search, Edit2, Trash2, Eye, BookOpen } from "lucide-react";
+import Spinner from "../components/ui/Loader";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  // Sample Data matching the platform's schema
-  const [tests, setTests] = useState([
-    {
-      id: 1,
-      name: "Grammar Mastery Quiz",
-      subject: "English",
-      topic: "Grammar",
-      questions: 50,
-      duration: 60,
-      marks: 250,
-      status: "Published",
-      date: "2026-06-01",
-    },
-    {
-      id: 2,
-      name: "Creative Writing Basics",
-      subject: "English",
-      topic: "Writing",
-      questions: 30,
-      duration: 45,
-      marks: 150,
-      status: "Draft",
-      date: "2026-06-03",
-    },
-    {
-      id: 3,
-      name: "Advanced Comprehension",
-      subject: "English",
-      topic: "Reading",
-      questions: 25,
-      duration: 40,
-      marks: 125,
-      status: "Scheduled",
-      date: "2026-06-05",
-    },
-  ]);
-
+  const [tests, setTests] = useState<Test[]>([]);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
 
   // Delete Handler
-  const handleDelete = (id: any) => {
-    if (window.confirm("Are you sure you want to delete this test?")) {
-      setTests(tests.filter((test) => test.id !== id));
-    }
-  };
+  // const handleDelete = (id: any) => {
+  //   if (window.confirm("Are you sure you want to delete this test?")) {
+  //     setTests(tests.filter((test) => test.id !== id));
+  //   }
+  // };
 
   // Filter Logic
   const filteredTests = tests.filter((test) => {
@@ -73,9 +27,14 @@ export default function Dashboard() {
       test.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       test.subject.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus =
-      statusFilter === "All" || test.status === statusFilter;
+      statusFilter === "All" ||
+      (statusFilter === "Published" && test.status === "live") ||
+      (statusFilter === "Draft" && test.status === "draft");
     return matchesSearch && matchesStatus;
   });
+
+  // Create test Navigate
+  const onCreateNewTest = () => navigate("/test/create");
 
   // const { tests, setTests } = useTestStore();
   // const logout = useAuthStore((state) => state.logout);
@@ -84,22 +43,24 @@ export default function Dashboard() {
   // const [deletingId, setDeletingId] = useState<string | null>(null);
   // const [search, setSearch] = useState("");
 
-  // useEffect(() => {
-  //   fetchTests();
-  // }, []);
+  useEffect(() => {
+    fetchTests();
+  }, []);
 
-  // const fetchTests = async () => {
-  //   setLoading(true);
-  //   setError(null);
-  //   try {
-  //     const res = await getAllTests();
-  //     setTests(res.data);
-  //   } catch {
-  //     setError("Failed to load tests. Please try again.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const fetchTests = async () => {
+    setLoading(true);
+    // setError(null);
+    try {
+      // const res = await getAllTests();
+      // setTests(res.data);
+      setTests(filteredTests);
+    } catch {
+      // setError("Failed to load tests. Please try again.");
+      console.log("Failed to load tests. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // const handleDelete = async (id: string) => {
   //   if (!confirm("Are you sure you want to delete this test?")) return;
@@ -138,7 +99,7 @@ export default function Dashboard() {
         <h1 className="font-medium text-lg text-slate-800">Dashboard</h1>
 
         <button
-          // onClick={onCreateNewTest}
+          onClick={onCreateNewTest}
           className="flex items-center justify-center gap-2 px-3 py-2 bg-[#4E73F8] hover:bg-[#3B62E3] text-white font-medium text-sm rounded-lg shadow-sm transition-all"
         >
           <Plus size={18} /> Create New Test
@@ -147,7 +108,6 @@ export default function Dashboard() {
 
       {/* SEARCH, FILTER & UTILITIES CONTROLS BAR */}
       <div className="bg-white p-4 rounded-lg border border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-        {/* Search input section */}
         <div className="relative w-full sm:w-80">
           <Search
             className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
@@ -162,7 +122,6 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Filter Tabs matching UI framework structure */}
         <div className="flex bg-slate-50 p-1 rounded-lg w-full sm:w-auto">
           {["All", "Published", "Draft", "Scheduled"].map((status) => (
             <button
@@ -186,43 +145,38 @@ export default function Dashboard() {
               <tr className="bg-slate-50/70 border-b border-slate-100 text-[11px] tracking-wider font-medium text-slate-400 uppercase">
                 <th className="py-4 px-6">Test Name</th>
                 <th className="py-4 px-6">Subject</th>
-                {/* <th className="py-4 px-6 text-center">Structure</th> */}
                 <th className="py-4 px-6">Status</th>
                 <th className="py-4 px-6">Created Date</th>
                 <th className="py-4 px-6 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-sm text-slate-600">
-              {filteredTests.length > 0 ? (
+              {loading ? (
+                <Spinner />
+              ) : filteredTests.length > 0 ? (
                 filteredTests.map((test) => (
                   <tr
                     key={test.id}
                     className="hover:bg-slate-50/60 transition-colors"
                   >
-                    {/* Column 1: Test Name Title */}
                     <td className="py-4 px-6 font-semibold text-slate-800">
                       {test.name}
                     </td>
 
-                    {/* Column 2: Subject & Tags mapping */}
                     <td className="py-4 px-6">
                       <div className="flex flex-col gap-1">
                         <span className="font-medium text-slate-700">
                           {test.subject}
                         </span>
-                        {/* <span className="inline-flex max-w-max px-2 py-0.5 bg-amber-50 text-amber-600 text-[11px] font-semibold rounded-md border border-amber-100">
-                          {test.topic}
-                        </span> */}
                       </div>
                     </td>
 
-                    {/* Column 4: Status Badges */}
                     <td className="py-4 px-6">
                       <span
                         className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
-                          test.status === "Published"
+                          test.status === "live"
                             ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
-                            : test.status === "Draft"
+                            : test.status === "draft"
                               ? "bg-slate-100 text-slate-600"
                               : "bg-blue-50 text-blue-600 border border-blue-100"
                         }`}
@@ -231,7 +185,6 @@ export default function Dashboard() {
                       </span>
                     </td>
 
-                    {/* Column 5: Date Created */}
                     <td className="py-4 px-6 text-slate-400 text-xs">
                       {new Date(test.date).toLocaleDateString("en-US", {
                         year: "numeric",
@@ -289,24 +242,6 @@ export default function Dashboard() {
     </div>
   );
 }
-
-// <div className="bg-gray-50">
-//   <div className="max-w-6xl mx-auto px-6 py-8">
-//     {/* Header row */}
-//     <div className="flex items-center justify-between mb-6">
-//       <div>
-//         <h2 className="text-xl font-semibold text-gray-900">All Tests</h2>
-//         <p className="text-sm text-gray-400 mt-0.5">
-//           {tests.length} test{tests.length !== 1 ? "s" : ""} total
-//         </p>
-//       </div>
-//       <button
-//         onClick={() => navigate("/test/create")}
-//         className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition cursor-pointer"
-//       >
-//         + Create New Test
-//       </button>
-//     </div>
 
 //     {/* Search */}
 //     <div className="mb-4">
