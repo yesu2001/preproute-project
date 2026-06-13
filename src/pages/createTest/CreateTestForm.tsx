@@ -1,43 +1,32 @@
-import React from "react";
 import SelectInput from "../../components/ui/SelectInput";
-import { useForm } from "react-hook-form";
 import TextInput from "../../components/ui/TextInput";
 import RadioInput from "../../components/ui/RadioInput";
 import Counter from "../../components/ui/Counter";
 
-export default function CreateTestForm() {
+interface CreateTestFormProps {
+  register: any;
+  errors: any;
+  formData: any;
+  adjustMarking: (
+    field: "wrongAnswerMark" | "unattempted" | "correctAnswer",
+    value: number,
+  ) => void;
+  handleNext: () => void;
+}
+
+export default function CreateTestForm({
+  register,
+  errors,
+  formData,
+  adjustMarking,
+  handleNext,
+}: CreateTestFormProps) {
   const subjectsList = [
     { value: "Mathematics", label: "Mathematics" },
     { value: "Physics", label: "Physics" },
     { value: "Chemistry", label: "Chemistry" },
     { value: "Biology", label: "Biology" },
   ];
-  const {
-    register,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<{
-    subject: string;
-    testName: string;
-    topic: string;
-    subTopic: string;
-    duration: string;
-    difficulty: string;
-    wrongAnswerMark: number;
-    unattempted: number;
-    correctAnswer: number;
-    totalQuestions: string;
-    totalMarks: string;
-  }>();
-
-  const formData = watch();
-
-  type MarkingField = "wrongAnswerMark" | "unattempted" | "correctAnswer";
-
-  const adjustMarking = (field: MarkingField, value: number) => {
-    setValue(field, value);
-  };
 
   return (
     <div>
@@ -141,7 +130,7 @@ export default function CreateTestForm() {
           Cancel
         </button>
         <button
-          // onClick={() => onNext(formData)}
+          onClick={handleNext}
           className="px-10 py-2 bg-[#4E73F8] text-white font-semibold rounded-md hover:bg-[#3B62E3] transition-all"
         >
           Next
