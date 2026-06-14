@@ -94,7 +94,8 @@ export default function Questions() {
           <MetaTestCard test={currentTest} />
         </div>
         <QuestionsForm
-          testId={testId!}
+          test={currentTest}
+          questions={questions}
           editingQuestion={editingQuestion}
           editingIndex={editingIndex}
           questionNumber={

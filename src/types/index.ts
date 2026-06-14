@@ -71,6 +71,7 @@ export interface AuthResponse {
 }
 
 export interface ApiResponse<T> {
+  id: any;
   success: boolean;
   data: T;
   message?: string;

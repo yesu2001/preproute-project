@@ -3,8 +3,9 @@ import React, { useEffect } from "react";
 import TextArea from "../../components/ui/TextArea";
 import SelectInput from "../../components/ui/SelectInput";
 import TextInput from "../../components/ui/TextInput";
+import MediaUpload from "../../components/ui/MediaUpload";
 import { useForm } from "react-hook-form";
-import type { Question } from "../../types";
+import type { Question, Test } from "../../types";
 import OptionInput from "../../components/ui/OptionInput";
 
 interface QuestionFormValues {
@@ -18,7 +19,9 @@ interface QuestionFormValues {
 }
 
 interface QuestionFormProps {
-  testId: string;
+  // test: string;
+  test: Test;
+  questions: Question[];
   editingQuestion: Question | null;
   editingIndex: number | null;
   questionNumber: number;
@@ -31,11 +34,12 @@ const OPTION_KEYS = ["option1", "option2", "option3", "option4"] as const;
 const difficultyOptions = [
   { value: "easy", label: "Easy" },
   { value: "medium", label: "Medium" },
-  { value: "difficult", label: "Difficult" },
+  { value: "difficult", label: "Hard" },
 ];
 
 export default function QuestionsForm({
-  testId,
+  test,
+  questions,
   editingQuestion,
   editingIndex,
   questionNumber,
@@ -110,7 +114,7 @@ export default function QuestionsForm({
       topic: data.topic,
       sub_topic: data.sub_topic,
       media_url: data.media_url,
-      test_id: testId,
+      test_id: test.id ?? "",
     };
     onSubmit(question);
     reset();
@@ -120,7 +124,8 @@ export default function QuestionsForm({
     <div className="space-y-6 relative p-4">
       <div className="flex items-center justify-between border-b border-slate-50 pb-4">
         <h3 className="text-base font-semibold text-slate-800">
-          Question 4<span className="text-slate-400">/50</span>
+          Question {questionNumber}
+          <span className="text-slate-400">/{test?.total_questions || 0}</span>
         </h3>
         <span className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-md font-semibold">
           MCQ Format
@@ -167,54 +172,12 @@ export default function QuestionsForm({
           })}
         />
       </div>
-      {/* FIELD 2: 4 OPTIONS GRID CONTEXT */}
-      {/* <div className="space-y-3">
-        <label className="text-sm font-semibold text-slate-700 block">
-          Type the options below<span className="text-rose-500">*</span>
-        </label>
-
-        <div className="grid grid-cols-1 gap-4">
-          {currentQuestion.options.map((option, idx) => (
-            <div
-              key={idx}
-              className="flex items-center gap-3 p-1 px-3 rounded-lg border border-slate-100 focus-within:border-blue-300 focus-within:bg-white transition-all"
-            >
-              <button
-                type="button"
-                onClick={() =>
-                  setCurrentQuestion({
-                    ...currentQuestion,
-                    correctOption: idx,
-                  })
-                }
-                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
-                  currentQuestion.correctOption === idx
-                    ? "border-blue-500 bg-blue-500"
-                    : "border-slate-300 bg-white"
-                }`}
-              >
-                {currentQuestion.correctOption === idx && (
-                  <div className="w-1.5 h-1.5 bg-white rounded-full" />
-                )}
-              </button>
-
-              <input
-                type="text"
-                placeholder={`Option ${idx + 1}`}
-                value={option}
-                onChange={(e) => handleOptionChange(idx, e.target.value)}
-                className="w-full bg-transparent p-2 text-sm text-slate-700 outline-none"
-              />
-            </div>
-          ))}
-        </div>
-      </div> */}
 
       <TextInput
         label="Correct Option"
         registration={register("correct_option", { required: true })}
         error={errors.correct_option}
-        placeholder="Enter correct option here"
+        placeholder="option3"
       />
 
       <TextArea
@@ -235,11 +198,7 @@ export default function QuestionsForm({
           <SelectInput
             label="Level of difficuty"
             registration={register("difficulty")}
-            options={[
-              { value: "Easy", label: "Easy" },
-              { value: "Medium", label: "Medium" },
-              { value: "Hard", label: "Hard" },
-            ]}
+            options={difficultyOptions}
             error={errors.difficulty}
             placeholder="select from drop-down"
           />
@@ -264,11 +223,10 @@ export default function QuestionsForm({
             placeholder="select from drop-down"
           />
 
-          <TextInput
-            label="Media URL"
-            registration={register("media_url")}
-            error={errors.media_url}
-            placeholder="Enter media URL here"
+          <MediaUpload
+            label="Media"
+            value={watch("media_url")}
+            onChange={(url) => setValue("media_url", url ?? "")}
           />
         </div>
       </div>

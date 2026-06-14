@@ -137,11 +137,10 @@ export default function CreateTest() {
     fetchSubTopics();
   }, [formData.topics, setValue]);
 
-  const handleCreateTest = (status: TestStatus) => {
+  const handleCreateTest = async (status: TestStatus) => {
     console.log("Create test payload:", formData);
-    const tempId = Date.now();
-    createTest({ ...formData, status });
-    navigate(`/test/${tempId}/questions`);
+    const res = await createTest({ ...formData, status });
+    navigate(`/test/${res.data.id}/questions`);
   };
 
   return (
