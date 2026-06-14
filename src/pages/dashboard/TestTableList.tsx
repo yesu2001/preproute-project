@@ -1,5 +1,6 @@
 import { BookOpen, Edit2, Eye, Search, Trash2 } from "lucide-react";
-import React from "react";
+// import Spinner from "../../components/ui/Spinner";
+import type { Test } from "../../types";
 import Spinner from "../../components/ui/Loader";
 
 interface TestTableListProps {
@@ -8,7 +9,11 @@ interface TestTableListProps {
   statusFilter: string;
   setStatusFilter: (status: string) => void;
   loading: boolean;
-  filteredTests: any[]; // Replace 'any[]' with the actual type if available
+  deletingId: string | null;
+  filteredTests: Test[];
+  onView: (id: string) => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
 export default function TestTableList({
@@ -17,10 +22,15 @@ export default function TestTableList({
   statusFilter,
   setStatusFilter,
   loading,
+  deletingId,
   filteredTests,
+  onView,
+  onEdit,
+  onDelete,
 }: TestTableListProps) {
   return (
     <>
+      {/* Search + filter bar */}
       <div className="bg-white p-4 rounded-lg border border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="relative w-full sm:w-80">
           <Search
@@ -52,6 +62,8 @@ export default function TestTableList({
           ))}
         </div>
       </div>
+
+      {/* Table */}
       <div className="bg-white rounded-lg border border-slate-50 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -64,11 +76,14 @@ export default function TestTableList({
                 <th className="py-4 px-6 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="w-full divide-y divide-slate-100 text-sm text-slate-600">
+            <tbody className="divide-y divide-slate-100 text-sm text-slate-600">
+              {/* Loading state — must be inside tr > td */}
               {loading ? (
-                <div className="w-full flex items-center justify-center">
-                  <Spinner />
-                </div>
+                <tr>
+                  <td colSpan={5} className="py-16 text-center">
+                    <Spinner />
+                  </td>
+                </tr>
               ) : filteredTests.length > 0 ? (
                 filteredTests.map((test) => (
                   <tr
@@ -79,12 +94,8 @@ export default function TestTableList({
                       {test.name}
                     </td>
 
-                    <td className="py-4 px-6">
-                      <div className="flex flex-col gap-1">
-                        <span className="font-medium text-slate-700">
-                          {test.subject}
-                        </span>
-                      </div>
+                    <td className="py-4 px-6 font-medium text-slate-700">
+                      {test.subject}
                     </td>
 
                     <td className="py-4 px-6">
@@ -97,41 +108,48 @@ export default function TestTableList({
                               : "bg-blue-50 text-blue-600 border border-blue-100"
                         }`}
                       >
-                        {test.status}
+                        {test.status ?? "unknown"}
                       </span>
                     </td>
 
                     <td className="py-4 px-6 text-slate-400 text-xs">
-                      {new Date(test.created_at).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
+                      {new Date(test.created_at ?? "").toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        },
+                      )}
                     </td>
 
-                    {/* Column 6: Action Buttons Matrix */}
                     <td className="py-4 px-6 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
-                          // onClick={() => onViewTest(test.id)}
+                          onClick={() => onView(test.id ?? "")}
                           className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
                           title="Preview Test"
                         >
                           <Eye size={16} />
                         </button>
                         <button
-                          // onClick={() => onEditTest(test.id)}
+                          onClick={() => onEdit(test.id ?? "")}
                           className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all"
-                          title="Edit Parameters"
+                          title="Edit Test"
                         >
                           <Edit2 size={16} />
                         </button>
                         <button
-                          // onClick={() => handleDelete(test.id)}
-                          className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
-                          title="Delete Archive"
+                          onClick={() => onDelete(test.id ?? "")}
+                          disabled={deletingId === test.id}
+                          className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all disabled:opacity-40"
+                          title="Delete Test"
                         >
-                          <Trash2 size={16} />
+                          {deletingId === test.id ? (
+                            <div className="w-4 h-4 border-2 border-rose-400 border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <Trash2 size={16} />
+                          )}
                         </button>
                       </div>
                     </td>
@@ -139,10 +157,7 @@ export default function TestTableList({
                 ))
               ) : (
                 <tr>
-                  <td
-                    colSpan={6}
-                    className="py-12 text-center text-slate-400 font-medium"
-                  >
+                  <td colSpan={5} className="py-12 text-center text-slate-400">
                     <BookOpen
                       size={36}
                       className="mx-auto text-slate-300 mb-2"
