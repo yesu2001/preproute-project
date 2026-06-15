@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { bulkCreateQuestions } from "../../api/questions";
 import { getStoredQuestions, saveQuestions } from "../../utils/storage";
 import { useQuestionStore } from "../../store/questionStore";
+import { useTestStore } from "../../store/testStore";
 import type { Question } from "../../types";
 
 export const useQuestions = () => {
@@ -10,6 +11,7 @@ export const useQuestions = () => {
   const navigate = useNavigate();
   const { questions, setQuestions, addQuestion, removeQuestion } =
     useQuestionStore();
+  const { currentTest } = useTestStore();
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,6 +56,7 @@ export const useQuestions = () => {
       const questionsWithTestId = questions.map((q) => ({
         ...q,
         test_id: testId,
+        subject: q.subject || currentTest?.subject || "",
       }));
       await bulkCreateQuestions(questionsWithTestId);
       saveQuestions(testId, questionsWithTestId);

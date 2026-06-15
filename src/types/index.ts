@@ -59,6 +59,7 @@ export interface Question {
   topic?: string;
   sub_topic?: string;
   media_url?: string;
+  subject?: string;
   test_id: string;
 }
 

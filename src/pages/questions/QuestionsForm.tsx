@@ -1,5 +1,4 @@
-import { Bold, Image, Italic, Link2, Underline } from "lucide-react";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import TextArea from "../../components/ui/TextArea";
 import SelectInput from "../../components/ui/SelectInput";
 import TextInput from "../../components/ui/TextInput";
@@ -10,6 +9,10 @@ import OptionInput from "../../components/ui/OptionInput";
 
 interface QuestionFormValues {
   question: string;
+  option1: string;
+  option2: string;
+  option3: string;
+  option4: string;
   correct_option: "option1" | "option2" | "option3" | "option4";
   explanation: string;
   difficulty: string;
@@ -19,14 +22,13 @@ interface QuestionFormValues {
 }
 
 interface QuestionFormProps {
-  // test: string;
   test: Test;
-  questions: Question[];
   editingQuestion: Question | null;
-  editingIndex: number | null;
   questionNumber: number;
   onSubmit: (question: Question) => void;
-  onCancelEdit: () => void;
+  saving: boolean;
+  error: string | null;
+  onBack: () => void;
 }
 
 const OPTION_KEYS = ["option1", "option2", "option3", "option4"] as const;
@@ -34,17 +36,17 @@ const OPTION_KEYS = ["option1", "option2", "option3", "option4"] as const;
 const difficultyOptions = [
   { value: "easy", label: "Easy" },
   { value: "medium", label: "Medium" },
-  { value: "difficult", label: "Hard" },
+  { value: "hard", label: "Hard" },
 ];
 
 export default function QuestionsForm({
   test,
-  questions,
   editingQuestion,
-  editingIndex,
   questionNumber,
   onSubmit,
-  onCancelEdit,
+  saving,
+  error,
+  onBack,
 }: QuestionFormProps) {
   const {
     register,
@@ -53,14 +55,7 @@ export default function QuestionsForm({
     setValue,
     reset,
     formState: { errors },
-  } = useForm<
-    QuestionFormValues & {
-      option1: string;
-      option2: string;
-      option3: string;
-      option4: string;
-    }
-  >({
+  } = useForm<QuestionFormValues>({
     defaultValues: {
       question: "",
       option1: "",
@@ -79,7 +74,6 @@ export default function QuestionsForm({
   const correctOption = watch("correct_option");
   const optionValues = OPTION_KEYS.map((key) => watch(key));
 
-  // Populate form when editing
   useEffect(() => {
     if (editingQuestion) {
       reset({
@@ -100,7 +94,7 @@ export default function QuestionsForm({
     }
   }, [editingQuestion, reset]);
 
-  const processSubmit = (data: any) => {
+  const processSubmit = (data: QuestionFormValues) => {
     const question: Question = {
       type: "mcq",
       question: data.question,
@@ -114,6 +108,7 @@ export default function QuestionsForm({
       topic: data.topic,
       sub_topic: data.sub_topic,
       media_url: data.media_url,
+      subject: test.subject,
       test_id: test.id ?? "",
     };
     onSubmit(question);
@@ -121,115 +116,140 @@ export default function QuestionsForm({
   };
 
   return (
-    <div className="space-y-6 relative p-4">
-      <div className="flex items-center justify-between border-b border-slate-50 pb-4">
-        <h3 className="text-base font-semibold text-slate-800">
-          Question {questionNumber}
-          <span className="text-slate-400">/{test?.total_questions || 0}</span>
-        </h3>
-        <span className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-md font-semibold">
-          MCQ Format
-        </span>
-      </div>
-
-      {/* FIELD 1: QUESTION TEXT */}
-      <TextArea
-        label="Question Text"
-        registration={register("question", { required: true })}
-        error={errors.question}
-        placeholder="Enter question here"
-      />
-
-      <div className="space-y-3">
-        <label className="text-sm font-semibold text-slate-700">Options</label>
-        <div className="space-y-3 mt-3">
-          {OPTION_KEYS.map((key, idx) => (
-            <OptionInput
-              key={key}
-              index={idx}
-              value={optionValues[idx] || ""}
-              isCorrect={correctOption === key}
-              onSelect={() => setValue("correct_option", key)}
-              onChange={(val) => setValue(key, val)}
-              error={
-                !optionValues[idx] && errors[key]
-                  ? `Option ${idx + 1} is required`
-                  : undefined
-              }
-            />
-          ))}
+    <form onSubmit={handleSubmit(processSubmit)} className="space-y-6 p-4">
+      <div className="space-y-6 relative p-4">
+        <div className="flex items-center justify-between border-b border-slate-50 pb-4">
+          <h3 className="text-base font-semibold text-slate-800">
+            Question {questionNumber}
+            <span className="text-slate-400">
+              /{test?.total_questions || 0}
+            </span>
+          </h3>
+          <span className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-md font-semibold">
+            MCQ Format
+          </span>
         </div>
-        {errors.correct_option && (
-          <p className="text-xs text-rose-500">
-            Please select the correct option
-          </p>
-        )}
-        {/* Hidden field to validate correct_option */}
-        <input
-          type="hidden"
-          {...register("correct_option", {
-            required: "Please select the correct option",
-          })}
+
+        {/* FIELD 1: QUESTION TEXT */}
+        <TextArea
+          label="Question Text"
+          registration={register("question", { required: true })}
+          error={errors.question}
+          placeholder="Enter question here"
         />
-      </div>
 
-      <TextInput
-        label="Correct Option"
-        registration={register("correct_option", { required: true })}
-        error={errors.correct_option}
-        placeholder="option3"
-      />
-
-      <TextArea
-        label="Explanation"
-        registration={register("explanation", { required: true })}
-        error={errors.explanation}
-        placeholder="Enter explanation here"
-      />
-
-      {/* OPTIONAL FIELDS GRID PANEL CONTAINER */}
-      <div className="border-t border-slate-50 pt-6 space-y-4">
-        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-          Question Settings
-        </h4>
-
-        <div className="grid grid-cols-1 gap-4">
-          {/* Topic Select Input */}
-          <SelectInput
-            label="Level of difficuty"
-            registration={register("difficulty")}
-            options={difficultyOptions}
-            error={errors.difficulty}
-            placeholder="select from drop-down"
-          />
-          <SelectInput
-            label="Topic"
-            options={[
-              { value: "Algebra", label: "Algebra" },
-              { value: "Geometry", label: "Geometry" },
-            ]}
-            registration={register("topic")}
-            error={errors.topic}
-            placeholder="select from drop-down"
-          />
-          <SelectInput
-            label="Sub-Topic"
-            options={[
-              { value: "Application", label: "Application" },
-              { value: "Syntax structure", label: "Syntax structure" },
-            ]}
-            registration={register("sub_topic")}
-            error={errors.sub_topic}
-            placeholder="select from drop-down"
-          />
-
-          <MediaUpload
-            label="Media"
-            value={watch("media_url")}
-            onChange={(url) => setValue("media_url", url ?? "")}
+        <div className="space-y-3">
+          <label className="text-sm font-semibold text-slate-700">
+            Options
+          </label>
+          <div className="space-y-3 mt-3">
+            {OPTION_KEYS.map((key, idx) => (
+              <OptionInput
+                key={key}
+                index={idx}
+                value={optionValues[idx] || ""}
+                isCorrect={correctOption === key}
+                onSelect={() => setValue("correct_option", key)}
+                onChange={(val) => setValue(key, val)}
+                error={
+                  !optionValues[idx] && errors[key]
+                    ? `Option ${idx + 1} is required`
+                    : undefined
+                }
+              />
+            ))}
+          </div>
+          {errors.correct_option && (
+            <p className="text-xs text-rose-500">
+              Please select the correct option
+            </p>
+          )}
+          {/* Hidden field to validate correct_option */}
+          <input
+            type="hidden"
+            {...register("correct_option", {
+              required: "Please select the correct option",
+            })}
           />
         </div>
+
+        <TextInput
+          label="Correct Option"
+          registration={register("correct_option", { required: true })}
+          error={errors.correct_option}
+          placeholder="option3"
+        />
+
+        <TextArea
+          label="Explanation"
+          registration={register("explanation", { required: true })}
+          error={errors.explanation}
+          placeholder="Enter explanation here"
+        />
+
+        {/* OPTIONAL FIELDS GRID PANEL CONTAINER */}
+        <div className="border-t border-slate-50 pt-6 space-y-4">
+          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            Question Settings
+          </h4>
+
+          <div className="grid grid-cols-1 gap-4">
+            {/* Topic Select Input */}
+            <SelectInput
+              label="Level of difficulty"
+              registration={register("difficulty")}
+              options={difficultyOptions}
+              error={errors.difficulty}
+              placeholder="select from drop-down"
+            />
+            <SelectInput
+              label="Topic"
+              options={test.topics?.map((t) => ({ value: t, label: t })) ?? []}
+              registration={register("topic")}
+              error={errors.topic}
+              placeholder="select from drop-down"
+            />
+            <SelectInput
+              label="Sub-Topic"
+              options={
+                test.sub_topics?.map((t) => ({ value: t, label: t })) ?? []
+              }
+              registration={register("sub_topic")}
+              error={errors.sub_topic}
+              placeholder="select from drop-down"
+            />
+
+            <MediaUpload
+              label="Media"
+              value={watch("media_url")}
+              onChange={(url) => setValue("media_url", url ?? "")}
+            />
+          </div>
+        </div>
       </div>
-    </div>
+      <div className="border-t border-slate-100 p-4 space-y-3">
+        {error && (
+          <div className="px-4 py-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg">
+            {error}
+          </div>
+        )}
+        <div className="flex justify-between">
+          <button
+            type="button"
+            onClick={onBack}
+            className="px-4 py-2 text-sm font-semibold text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+          >
+            ← Back
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold text-sm rounded-lg transition-all cursor-pointer"
+          >
+            {saving ? "Adding..." : "Add Question"}
+          </button>
+        </div>
+      </div>
+    </form>
   );
 }

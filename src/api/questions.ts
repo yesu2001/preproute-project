@@ -19,9 +19,16 @@ export const bulkCreateQuestions = async (questions: Question[]) => {
       message: `Successfully created ${created.length} questions`,
     };
   }
+
+  const sanitized = questions.map(({ topic, sub_topic, ...rest }) => rest);
+
   const res = await api.post<ApiResponse<Question[]>>("/questions/bulk", {
-    questions,
+    questions: sanitized,
   });
+
+  // const res = await api.post<ApiResponse<Question[]>>("/questions/bulk", {
+  //   questions,
+  // });
   return res.data;
 };
 
