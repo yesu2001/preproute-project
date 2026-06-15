@@ -22,9 +22,9 @@ export interface SubTopic {
   topic_id: string;
 }
 
-export type TestType = "chapterwise" | "topicwise";
-export type TestDifficulty = "easy" | "medium" | "difficult";
 export type TestStatus = "draft" | "live" | "scheduled" | null;
+export type TestType = "chapterwise" | "pyq" | "mock";
+export type TestDifficulty = "easy" | "medium" | "hard";
 
 export interface Test {
   id?: string;

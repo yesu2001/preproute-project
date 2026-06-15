@@ -6,6 +6,7 @@ import { Bell, ChevronDown, Menu, X } from "lucide-react";
 const ProtectedRoute = () => {
   const token = useAuthStore((state) => state.token);
   const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
   const location = useLocation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -84,7 +85,10 @@ const ProtectedRoute = () => {
           </nav>
         </div>
         <div className="p-6 border-t border-slate-200">
-          <button className="w-full bg-red-100 hover:bg-red-200 text-red-700 font-medium py-2 px-4 rounded-lg text-sm transition-colors cursor-pointer">
+          <button
+            onClick={logout}
+            className="w-full bg-red-100 hover:bg-red-200 text-red-700 font-medium py-2 px-4 rounded-lg text-sm transition-colors cursor-pointer"
+          >
             Logout
           </button>
         </div>

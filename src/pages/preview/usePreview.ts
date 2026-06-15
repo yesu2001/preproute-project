@@ -61,12 +61,7 @@ export const usePreview = () => {
     }
   };
 
-  const handlePublish = async (scheduleData?: {
-    publishType: "now" | "scheduled";
-    endDate?: string;
-    endTime?: string;
-    liveUntil?: string;
-  }) => {
+  const handlePublish = async () => {
     if (!testId) return;
     setPublishing(true);
     setError(null);

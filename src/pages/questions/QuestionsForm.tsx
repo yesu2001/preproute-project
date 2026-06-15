@@ -1,10 +1,21 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import TextArea from "../../components/ui/TextArea";
 import SelectInput from "../../components/ui/SelectInput";
 import TextInput from "../../components/ui/TextInput";
 import MediaUpload from "../../components/ui/MediaUpload";
 import { useForm } from "react-hook-form";
-import type { Question, Test } from "../../types";
+import type {
+  Question,
+  Test,
+  Topic as TopicType,
+  SubTopic as SubTopicType,
+  Subject,
+} from "../../types";
+import {
+  getSubjects,
+  getTopicsBySubject,
+  getSubTopicsByTopics,
+} from "../../api/subjects";
 import OptionInput from "../../components/ui/OptionInput";
 
 interface QuestionFormValues {
@@ -48,6 +59,54 @@ export default function QuestionsForm({
   error,
   onBack,
 }: QuestionFormProps) {
+  const [topicOptions, setTopicOptions] = useState<
+    { value: string; label: string }[]
+  >(test.topics?.map((t) => ({ value: t, label: t })) ?? []);
+  const [subTopicOptions, setSubTopicOptions] = useState<
+    { value: string; label: string }[]
+  >(test.sub_topics?.map((t) => ({ value: t, label: t })) ?? []);
+
+  const resolveTopicOptions = async () => {
+    try {
+      // Resolve subject id if subject is a name
+      const subjectsRes = await getSubjects();
+      const subjects: Subject[] = subjectsRes.data || [];
+      const subj = subjects.find(
+        (s) => s.id === test.subject || s.name === test.subject,
+      );
+      const subjId = subj?.id || test.subject;
+
+      const topicsRes = await getTopicsBySubject(subjId as string);
+      const topics: TopicType[] = topicsRes.data || [];
+
+      // Build options: prefer names for labels
+      const options = topics.map((t) => ({ value: t.id, label: t.name }));
+      setTopicOptions(options);
+
+      // If test.sub_topics exist and test.topics are ids or names, attempt to resolve subtopics
+      const topicIds = (test.topics || []).map(
+        (t) => topics.find((x) => x.id === t || x.name === t)?.id || t,
+      );
+      if (topicIds.length > 0) {
+        const subRes = await getSubTopicsByTopics(topicIds as string[]);
+        const subList: SubTopicType[] = subRes.data || [];
+        setSubTopicOptions(
+          subList.map((s) => ({ value: s.id, label: s.name })),
+        );
+      }
+    } catch (err) {
+      // fallback to existing names
+      setTopicOptions(test.topics?.map((t) => ({ value: t, label: t })) ?? []);
+      setSubTopicOptions(
+        test.sub_topics?.map((t) => ({ value: t, label: t })) ?? [],
+      );
+    }
+  };
+
+  useEffect(() => {
+    resolveTopicOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [test]);
   const {
     register,
     handleSubmit,
@@ -204,16 +263,14 @@ export default function QuestionsForm({
             />
             <SelectInput
               label="Topic"
-              options={test.topics?.map((t) => ({ value: t, label: t })) ?? []}
+              options={topicOptions}
               registration={register("topic")}
               error={errors.topic}
               placeholder="select from drop-down"
             />
             <SelectInput
               label="Sub-Topic"
-              options={
-                test.sub_topics?.map((t) => ({ value: t, label: t })) ?? []
-              }
+              options={subTopicOptions}
               registration={register("sub_topic")}
               error={errors.sub_topic}
               placeholder="select from drop-down"

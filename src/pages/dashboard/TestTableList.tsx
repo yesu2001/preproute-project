@@ -1,6 +1,6 @@
 import { BookOpen, Edit2, Eye, Search, Trash2 } from "lucide-react";
 // import Spinner from "../../components/ui/Spinner";
-import type { Test } from "../../types";
+import type { Subject, Test } from "../../types";
 import Spinner from "../../components/ui/Loader";
 
 interface TestTableListProps {
@@ -11,6 +11,7 @@ interface TestTableListProps {
   loading: boolean;
   deletingId: string | null;
   filteredTests: Test[];
+  subjects?: Subject[];
   onView: (id: string) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
@@ -24,6 +25,7 @@ export default function TestTableList({
   loading,
   deletingId,
   filteredTests,
+  subjects,
   onView,
   onEdit,
   onDelete,
@@ -64,20 +66,19 @@ export default function TestTableList({
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg border border-slate-50 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+      <div className="bg-white rounded-lg border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+        <div className="overflow-auto max-h-135 custom-scrollbar">
+          <table className="w-full text-left border-collapse relative">
             <thead>
-              <tr className="bg-slate-50/70 border-b border-slate-100 text-[11px] tracking-wider font-medium text-slate-400 uppercase">
-                <th className="py-4 px-6">Test Name</th>
-                <th className="py-4 px-6">Subject</th>
-                <th className="py-4 px-6">Status</th>
-                <th className="py-4 px-6">Created Date</th>
-                <th className="py-4 px-6 text-right">Actions</th>
+              <tr className="sticky top-0 bg-slate-50 border-b border-slate-100 text-[11px] tracking-wider font-medium text-slate-400 uppercase z-10 shadow-[0_1px_0_0_rgba(241,245,249,1)]">
+                <th className="py-4 px-6 bg-slate-50">Test Name</th>
+                <th className="py-4 px-6 bg-slate-50">Subject</th>
+                <th className="py-4 px-6 bg-slate-50">Status</th>
+                <th className="py-4 px-6 bg-slate-50">Created Date</th>
+                <th className="py-4 px-6 bg-slate-50 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-sm text-slate-600">
-              {/* Loading state — must be inside tr > td */}
               {loading ? (
                 <tr>
                   <td colSpan={5} className="py-16 text-center">
@@ -88,16 +89,15 @@ export default function TestTableList({
                 filteredTests.map((test) => (
                   <tr
                     key={test.id}
-                    className="hover:bg-slate-50/60 transition-colors"
+                    className="hover:bg-slate-50/60 transition-colors bg-white"
                   >
                     <td className="py-4 px-6 font-semibold text-slate-800">
                       {test.name}
                     </td>
-
                     <td className="py-4 px-6 font-medium text-slate-700">
-                      {test.subject}
+                      {subjects?.find((s) => s.id === test.subject)?.name ||
+                        test.subject}
                     </td>
-
                     <td className="py-4 px-6">
                       <span
                         className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
@@ -111,7 +111,6 @@ export default function TestTableList({
                         {test.status ?? "unknown"}
                       </span>
                     </td>
-
                     <td className="py-4 px-6 text-slate-400 text-xs">
                       {new Date(test.created_at ?? "").toLocaleDateString(
                         "en-US",
@@ -122,20 +121,17 @@ export default function TestTableList({
                         },
                       )}
                     </td>
-
                     <td className="py-4 px-6 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => onView(test.id ?? "")}
                           className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-                          title="Preview Test"
                         >
                           <Eye size={16} />
                         </button>
                         <button
                           onClick={() => onEdit(test.id ?? "")}
                           className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all"
-                          title="Edit Test"
                         >
                           <Edit2 size={16} />
                         </button>
@@ -143,7 +139,6 @@ export default function TestTableList({
                           onClick={() => onDelete(test.id ?? "")}
                           disabled={deletingId === test.id}
                           className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all disabled:opacity-40"
-                          title="Delete Test"
                         >
                           {deletingId === test.id ? (
                             <div className="w-4 h-4 border-2 border-rose-400 border-t-transparent rounded-full animate-spin" />

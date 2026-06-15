@@ -7,6 +7,13 @@ import {
 } from "lucide-react";
 import type { Test } from "../types";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import {
+  getSubjects,
+  getTopicsBySubject,
+  getSubTopicsByTopics,
+} from "../api/subjects";
+import type { Subject, Topic, SubTopic } from "../types";
 
 interface MetaTestCardProps {
   test: Test;
@@ -24,6 +31,71 @@ const MetaTestCard = ({ test, showEditButton = true }: MetaTestCardProps) => {
   const navigate = useNavigate();
   const diffColor =
     difficultyColors[test.difficulty?.toLowerCase()] ?? "bg-slate-500";
+  const [subjectLabel, setSubjectLabel] = useState<string>(test.subject || "");
+  const [topicLabels, setTopicLabels] = useState<string[]>([]);
+  const [subTopicLabels, setSubTopicLabels] = useState<string[]>([]);
+
+  useEffect(() => {
+    const resolveLabels = async () => {
+      try {
+        const subjectsRes = await getSubjects();
+        const subjects: Subject[] = subjectsRes.data || [];
+        const subjectMatch = subjects.find(
+          (s) => s.id === test.subject || s.name === test.subject,
+        );
+        const subjectId = subjectMatch?.id || test.subject;
+        setSubjectLabel(subjectMatch?.name || test.subject || "");
+
+        const topicsRes = await getTopicsBySubject(subjectId);
+        const topicsList: Topic[] = topicsRes.data || [];
+
+        const resolvedTopicIds: string[] = [];
+        const resolvedTopicLabels = (test.topics || []).map((rawTopic) => {
+          const byId = topicsList.find((topic) => topic.id === rawTopic);
+          if (byId) {
+            resolvedTopicIds.push(byId.id);
+            return byId.name;
+          }
+
+          const byName = topicsList.find((topic) => topic.name === rawTopic);
+          if (byName) {
+            resolvedTopicIds.push(byName.id);
+
+            return byName.name;
+          }
+
+          return rawTopic;
+        });
+        setTopicLabels(resolvedTopicLabels);
+
+        if ((test.sub_topics || []).length > 0 && resolvedTopicIds.length > 0) {
+          const subRes = await getSubTopicsByTopics(resolvedTopicIds);
+          const subList: SubTopic[] = subRes.data || [];
+          const resolvedSubTopicLabels = (test.sub_topics || []).map(
+            (rawSubTopic) => {
+              const byId = subList.find(
+                (subTopic) => subTopic.id === rawSubTopic,
+              );
+              if (byId) return byId.name;
+
+              const byName = subList.find(
+                (subTopic) => subTopic.name === rawSubTopic,
+              );
+              if (byName) return byName.name;
+
+              return rawSubTopic;
+            },
+          );
+          setSubTopicLabels(resolvedSubTopicLabels);
+        } else {
+          setSubTopicLabels((test.sub_topics || []).map((raw) => raw));
+        }
+      } catch (err) {
+        console.error("Failed to resolve subject/topic labels", err);
+      }
+    };
+    resolveLabels();
+  }, [test]);
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 p-6 flex items-start justify-between shadow-sm relative">
@@ -57,7 +129,7 @@ const MetaTestCard = ({ test, showEditButton = true }: MetaTestCardProps) => {
               <p>:</p>
             </div>
             <span className="font-semibold text-slate-500 ml-1">
-              {test.subject}
+              {subjectLabel}
             </span>
           </div>
           <div className="text-slate-400 flex items-center gap-1">
@@ -66,12 +138,7 @@ const MetaTestCard = ({ test, showEditButton = true }: MetaTestCardProps) => {
               <p> :</p>
             </div>
             <div className="flex flex-wrap gap-2 text-sm">
-              <span className="inline-block px-2  text-amber-400 rounded-md ml-2 border border-amber-400">
-                {test.topics?.[0] || "Grammar"}
-              </span>
-              <span className="inline-block px-2 text-amber-400 rounded-md ml-1 border border-amber-400">
-                {test.topics?.[1] || "Writing"}
-              </span>
+              <TopicBadges labels={topicLabels} />
             </div>
           </div>
           <div className="text-slate-400 flex items-center gap-1">
@@ -79,9 +146,9 @@ const MetaTestCard = ({ test, showEditButton = true }: MetaTestCardProps) => {
               <p>Sub Topic</p>
               <p> :</p>
             </div>
-            <span className="inline-block px-2 text-sm text-amber-400 rounded-md ml-2 border border-amber-400">
-              {test.sub_topics?.[0] || "Application"}
-            </span>
+            <div className="flex flex-wrap gap-2 text-sm">
+              <TopicBadges labels={subTopicLabels} />
+            </div>
           </div>
         </div>
       </div>
@@ -114,3 +181,20 @@ const MetaTestCard = ({ test, showEditButton = true }: MetaTestCardProps) => {
 };
 
 export default MetaTestCard;
+
+// ----------------------------------------------------------------
+
+const TopicBadges = ({ labels }: { labels?: string[] }) => {
+  if (!labels) return <p className="text-slate-400 text-xs">Loading...</p>;
+  if (labels.length === 0)
+    return <p className="text-slate-400 text-xs px-2">None specified</p>;
+
+  return labels.map((label, index) => (
+    <span
+      key={label || index}
+      className="inline-block px-2 text-amber-400 rounded-md border border-amber-400"
+    >
+      {label}
+    </span>
+  ));
+};

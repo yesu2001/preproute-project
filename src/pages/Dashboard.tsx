@@ -6,6 +6,8 @@ import { useAuthStore } from "../store/authStore";
 import type { Test } from "../types";
 import { Plus, Search, Edit2, Trash2, Eye, BookOpen } from "lucide-react";
 import Spinner from "../components/ui/Loader";
+import { getSubjects } from "../api/subjects";
+import type { Subject } from "../types";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -13,6 +15,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [subjects, setSubjects] = useState<Subject[]>([]);
 
   // Delete Handler
   // const handleDelete = (id: any) => {
@@ -45,6 +48,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchTests();
+    fetchSubjects();
   }, []);
 
   const fetchTests = async () => {
@@ -75,9 +79,22 @@ export default function Dashboard() {
   //   }
   // };
 
+  const fetchSubjects = async () => {
+    try {
+      const res = await getSubjects();
+      setSubjects(res.data || []);
+    } catch (err) {
+      console.error("Failed to fetch subjects", err);
+    }
+  };
+
   // const handleLogout = () => {
   //   logout();
-  //   navigate("/login");
+  subjects
+    .find((s) => s.id === test.subject)
+    ?.name.toLowerCase()
+    .includes(searchTerm.toLowerCase()) ||
+    test.subject.toLowerCase().includes(searchTerm.toLowerCase());
   // };
 
   // const filtered = tests.filter((t) =>
@@ -168,7 +185,8 @@ export default function Dashboard() {
                     <td className="py-4 px-6">
                       <div className="flex flex-col gap-1">
                         <span className="font-medium text-slate-700">
-                          {test.subject}
+                          {subjects.find((s) => s.id === test.subject)?.name ||
+                            test.subject}
                         </span>
                       </div>
                     </td>

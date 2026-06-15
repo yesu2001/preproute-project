@@ -34,9 +34,10 @@ const SelectInput = ({
           {...registration}
           disabled={disabled}
           multiple={multiple}
+          size={multiple ? 6 : undefined}
           className="w-full appearance-none border border-slate-200 rounded-lg px-4 py-3 text-sm text-slate-500 focus:ring-2 focus:ring-blue-100 focus:border-blue-300 outline-none transition-all disabled:bg-slate-50 disabled:cursor-not-allowed"
         >
-          <option value="">{placeholder}</option>
+          {!multiple && <option value="">{placeholder}</option>}
           {options.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
@@ -44,7 +45,7 @@ const SelectInput = ({
           ))}
         </select>
         <ChevronDown
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+          className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
           size={16}
         />
       </div>

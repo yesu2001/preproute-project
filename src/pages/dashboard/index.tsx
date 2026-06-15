@@ -6,11 +6,14 @@ import type { Test } from "../../types";
 import { getAllTests } from "../../api/tests";
 import { removeTest } from "../../api/tests";
 import { useTestStore } from "../../store/testStore";
+import { getSubjects } from "../../api/subjects";
+import type { Subject } from "../../types";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { setCurrentTest } = useTestStore();
   const [tests, setTests] = useState<Test[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,6 +21,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchTests();
+    fetchSubjects();
   }, []);
 
   const fetchTests = async () => {
@@ -29,6 +33,15 @@ export default function Dashboard() {
       console.error("Failed to load tests.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSubjects = async () => {
+    try {
+      const res = await getSubjects();
+      setSubjects(res.data || []);
+    } catch (err) {
+      console.error("Failed to load subjects", err);
     }
   };
 
@@ -59,9 +72,11 @@ export default function Dashboard() {
   };
 
   const filteredTests = tests.filter((test) => {
+    const subjectLabel =
+      subjects.find((s) => s.id === test.subject)?.name || test.subject || "";
     const matchesSearch =
       test.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      test.subject.toLowerCase().includes(searchTerm.toLowerCase());
+      subjectLabel.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus =
       statusFilter === "All" ||
       (statusFilter === "Published" && test.status === "live") ||
@@ -80,6 +95,7 @@ export default function Dashboard() {
         loading={loading}
         deletingId={deletingId}
         filteredTests={filteredTests}
+        subjects={subjects}
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}

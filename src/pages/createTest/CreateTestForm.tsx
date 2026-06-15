@@ -1,11 +1,36 @@
+import MultiSelectInput from "../../components/ui/MultiSelectInput";
 import SelectInput from "../../components/ui/SelectInput";
 import TextInput from "../../components/ui/TextInput";
-import type { Subject, Topic, SubTopic, TestStatus } from "../../types";
+import type { UseFormSetValue } from "react-hook-form";
+import type {
+  Subject,
+  Topic,
+  SubTopic,
+  TestStatus,
+  TestType,
+  TestDifficulty,
+} from "../../types";
 
 interface CreateTestFormProps {
   register: any;
+  setValue: UseFormSetValue<{
+    name: string;
+    type: TestType;
+    subject: string;
+    topics: string[];
+    sub_topics: string[];
+    difficulty: TestDifficulty;
+    correct_marks: number;
+    wrong_marks: number;
+    unattempt_marks: number;
+    total_time: number;
+    total_marks: number;
+    total_questions: number;
+    status?: TestStatus | null;
+  }>;
   errors: any;
   formData: any;
+  isEditMode: boolean;
   handleNext: (status: TestStatus) => void;
   subjects: Subject[];
   topics: Topic[];
@@ -17,8 +42,10 @@ interface CreateTestFormProps {
 
 export default function CreateTestForm({
   register,
+  setValue,
   errors,
   formData,
+  isEditMode,
   handleNext,
   subjects,
   topics,
@@ -28,14 +55,15 @@ export default function CreateTestForm({
   loadingSubTopics,
 }: CreateTestFormProps) {
   const testTypeOptions = [
-    { value: "chapterwise", label: "Chapterwise" },
-    { value: "topicwise", label: "Topicwise" },
+    { value: "chapterwise", label: "Chapter Wise" },
+    { value: "pyq", label: "PYQ" },
+    { value: "mock", label: "Mock Test" },
   ];
 
   const difficultyOptions = [
     { value: "easy", label: "Easy" },
     { value: "medium", label: "Medium" },
-    { value: "difficult", label: "Difficult" },
+    { value: "hard", label: "Hard" },
   ];
 
   const subjectsOptions = subjects.map((s) => ({
@@ -83,26 +111,37 @@ export default function CreateTestForm({
           disabled={loadingSubjects}
         />
 
-        <SelectInput
+        <input type="hidden" {...register("topics")} />
+        <input type="hidden" {...register("sub_topics")} />
+
+        <MultiSelectInput
           label="Topics"
-          registration={register("topics")}
           options={topicsOptions}
+          selected={formData.topics || []}
+          onChange={(values) => setValue("topics", values)}
           error={errors.topics}
           placeholder="Select topics"
           disabled={loadingTopics || !formData.subject}
-          multiple
+          noOptionsText={
+            formData.subject ? "No topics available" : "Select a subject first"
+          }
         />
 
-        <SelectInput
+        <MultiSelectInput
           label="Sub Topics"
-          registration={register("sub_topics")}
           options={subTopicsOptions}
+          selected={formData.sub_topics || []}
+          onChange={(values) => setValue("sub_topics", values)}
           error={errors.sub_topics}
           placeholder="Select sub topics"
           disabled={
             loadingSubTopics || !formData.topics || formData.topics.length === 0
           }
-          multiple
+          noOptionsText={
+            formData.topics && formData.topics.length > 0
+              ? "No sub topics available"
+              : "Select topics first"
+          }
         />
 
         <SelectInput
@@ -188,19 +227,21 @@ export default function CreateTestForm({
 
       {/* ACTION BUTTONS */}
       <div className="w-full flex justify-end gap-4 mt-12">
+        {!isEditMode && (
+          <button
+            type="button"
+            onClick={() => handleNext("draft")}
+            className="px-10 py-2 text-[#4E73F8] font-semibold bg-sky-50 rounded-md transition-all"
+          >
+            Save as Draft
+          </button>
+        )}
         <button
           type="button"
           onClick={() => handleNext("draft")}
-          className="px-10 py-2 text-[#4E73F8] font-semibold bg-sky-50 rounded-md transition-all"
-        >
-          Save as Draft
-        </button>
-        <button
-          type="button"
-          onClick={() => handleNext("live")}
           className="px-10 py-2 bg-[#4E73F8] text-white font-semibold rounded-md hover:bg-[#3B62E3] transition-all"
         >
-          Next: Add Questions
+          {isEditMode ? "Update" : "Next: Add Questions"}
         </button>
       </div>
     </div>

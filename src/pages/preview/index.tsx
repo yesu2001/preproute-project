@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { CircleCheck, Edit2 } from "lucide-react";
 import { usePreview } from "./usePreview";
-import PublishSettings from "./PublishSettings";
 import type { Question } from "../../types";
 import Spinner from "../../components/ui/Loader";
 import MetaTestCard from "../../components/MetaTestCard";
@@ -38,17 +37,19 @@ const Preview = () => {
             </div>
           )}
         </div>
-        {/* Edit questions button — requirement: "Edit test or questions buttons" */}
         <button
-          onClick={() => navigate(`/test/${testId}/questions`)}
-          className="flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-blue-600 border border-slate-200 hover:border-blue-300 px-4 py-2 rounded-lg transition-all cursor-pointer"
+          onClick={handlePublish}
+          disabled={publishing || published}
+          className="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold text-sm rounded-lg transition-all cursor-pointer"
         >
-          <Edit2 size={14} />
-          Edit Questions
+          {published
+            ? "✓ Published"
+            : publishing
+              ? "Publishing..."
+              : "Publish Test"}
         </button>
       </div>
 
-      {/* Test summary — MetaTestCard already has edit test button */}
       <MetaTestCard test={currentTest} showEditButton />
 
       {/* Questions list */}
@@ -62,6 +63,13 @@ const Preview = () => {
             <h3 className="text-sm font-bold text-slate-700">
               Questions ({questions.length})
             </h3>
+            <button
+              onClick={() => navigate(`/test/${testId}/questions`)}
+              className="flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-blue-600 border border-slate-200 hover:border-blue-300 px-4 py-2 rounded-lg transition-all cursor-pointer"
+            >
+              <Edit2 size={14} />
+              Edit Questions
+            </button>
           </div>
           <div className="space-y-4">
             {questions.map((q: Question, idx: number) => (
@@ -82,6 +90,21 @@ const Preview = () => {
                     </span>
                   )}
                 </div>
+
+                {/* Question Image Layer */}
+                {q.media_url && (
+                  <div className="w-full max-w-md mx-auto my-2 border border-slate-100 rounded-lg overflow-hidden bg-slate-50/50">
+                    <img
+                      src={q.media_url}
+                      alt={`Visual material for Question ${idx + 1}`}
+                      className="w-full h-auto object-contain max-h-64 mx-auto block rounded-lg"
+                      loading="lazy"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                      }}
+                    />
+                  </div>
+                )}
 
                 {/* Options */}
                 <div className="grid grid-cols-2 gap-2">
@@ -130,18 +153,6 @@ const Preview = () => {
         </div>
       )}
 
-      {/* Publish settings */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-        <h3 className="text-sm font-bold text-slate-700 mb-6">
-          Publish Settings
-        </h3>
-        <PublishSettings
-          publishing={publishing}
-          published={published}
-          onPublish={handlePublish}
-        />
-      </div>
-
       {/* Success modal */}
       {published && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -166,16 +177,6 @@ const Preview = () => {
           </div>
         </div>
       )}
-
-      {/* Back navigation */}
-      <div className="flex justify-between pt-2 border-t border-slate-100">
-        <button
-          onClick={() => navigate(`/test/${testId}/questions`)}
-          className="text-sm font-semibold text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
-        >
-          ← Back to Questions
-        </button>
-      </div>
     </div>
   );
 };
