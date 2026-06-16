@@ -8,7 +8,6 @@ interface OptionInputProps {
 }
 
 const OptionInput = ({
-  index,
   value,
   isCorrect,
   onSelect,

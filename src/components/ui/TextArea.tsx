@@ -15,10 +15,7 @@ const TextArea = ({
 }: TextAreaProps) => {
   return (
     <div>
-      <label className="text-sm font-semibold text-slate-700">
-        {label}
-        {/* {required && <span className="text-rose-500 ml-1">*</span>} */}
-      </label>
+      <label className="text-sm font-semibold text-slate-700">{label}</label>
       <textarea
         rows={4}
         {...registration}
