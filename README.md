@@ -2,7 +2,8 @@
 
 A 5-page test management application built as part of the Preproute Assignment.
 
-**Live Demo:** [https://preproute-project.vercel.app/login]
+**Live Demo:** - https://preproute-project.vercel.app/login
+
 **Login credentials:**
 
 - Username: `vedant-admin`
