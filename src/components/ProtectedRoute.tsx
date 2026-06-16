@@ -21,7 +21,7 @@ const ProtectedRoute = () => {
       label: "Dashboard",
       icon: (
         <img
-          src="/src/assets/dash.png"
+          src="/assets/dash.png"
           alt="Dashboard Icon"
           className="h-4 w-auto"
         />
@@ -32,7 +32,7 @@ const ProtectedRoute = () => {
       label: "Test Creation",
       icon: (
         <img
-          src="/src/assets/edit.png"
+          src="/assets/edit.png"
           alt="Test Creation Icon"
           className="h-4 w-auto"
         />
@@ -43,7 +43,7 @@ const ProtectedRoute = () => {
       label: "Test Tracking",
       icon: (
         <img
-          src="/src/assets/track.png"
+          src="/assets/track.png"
           alt="Test Tracking Icon"
           className="h-5 w-auto"
         />
@@ -63,7 +63,7 @@ const ProtectedRoute = () => {
       {/* --- DESKTOP SIDEBAR --- */}
       <aside className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between hidden md:flex fixed h-full z-20">
         <div className="p-6">
-          <img src="/src/assets/logo.png" alt="Logo" className="h-8 w-auto" />
+          <img src="/assets/logo.png" alt="Logo" className="h-8 w-auto" />
           <nav className="mt-10 space-y-1">
             {navItems.map((item) => {
               const isActive = isPathActive(item.path);
@@ -105,11 +105,7 @@ const ProtectedRoute = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <img
-                src="/src/assets/logo.png"
-                alt="Logo"
-                className="h-8 w-auto"
-              />
+              <img src="/assets/logo.png" alt="Logo" className="h-8 w-auto" />
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="text-slate-500 hover:text-slate-800"
@@ -162,7 +158,7 @@ const ProtectedRoute = () => {
             </button>
             <div className="flex items-center gap-3 pl-2 border-l border-slate-100">
               <img
-                src="/src/assets/avatar.png"
+                src="/assets/avatar.png"
                 alt="Profile Avatar"
                 className="w-10 h-10 rounded-full object-cover bg-amber-100"
               />

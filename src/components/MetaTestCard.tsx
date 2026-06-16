@@ -89,16 +89,12 @@ const MetaTestCard = ({ test }: MetaTestCardProps) => {
         </span>
         <div className="flex items-center gap-3 my-4">
           <span className="text-sm font-bold text-slate-800 flex items-center gap-1.5 font-md">
-            <img
-              src="/src/assets/subject.png"
-              alt="Subject"
-              className="w-8 h-8"
-            />
+            <img src="/assets/subject.png" alt="Subject" className="w-8 h-8" />
             {test.name}{" "}
           </span>
           <span className="bg-[#2AB7A9] text-white border flex items-center gap-1 text-sm  px-4 py-1 rounded-lg capitalize">
             <img
-              src="/src/assets/cognition.png"
+              src="/assets/cognition.png"
               alt="Subject"
               className="w-5 h-5"
             />
