@@ -1,5 +1,4 @@
 import { BookOpen, Edit2, Eye, Search, Trash2 } from "lucide-react";
-// import Spinner from "../../components/ui/Spinner";
 import type { Subject, Test } from "../../types";
 import Spinner from "../../components/ui/Loader";
 

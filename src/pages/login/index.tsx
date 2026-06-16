@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { loginApi } from "../api/auth";
+import { loginApi } from "../../api/auth";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../store/authStore";
+import { useAuthStore } from "../../store/authStore";
 
 interface LoginForm {
   userId: string;

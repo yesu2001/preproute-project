@@ -1,73 +1,74 @@
-# React + TypeScript + Vite
+# Preproute — Test Management App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A 5-page test management application built as part of the Preproute Assignment.
 
-Currently, two official plugins are available:
+**Live Demo:** [Add Vercel URL]  
+**Walkthrough Video:** [Add video link]
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**Login credentials:**
 
-## React Compiler
+- Username: `vedant-admin`
+- Password: `vedant123`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React + TypeScript (Vite)
+- Tailwind CSS
+- Zustand (state management)
+- React Hook Form
+- Axios
+- React Router v6
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Pages
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. **Login** — JWT auth, token stored in localStorage
+2. **Dashboard** — list all tests, search, filter, edit/delete/view
+3. **Create/Edit Test** — cascading subject → topic → subtopic dropdowns, marking scheme
+4. **Add Questions** — MCQ form, question sidebar tracker, bulk submit to API
+5. **Preview & Publish** — test summary, all questions, publish to live
+
+---
+
+## Project Structure
+
+```
+src/
+├── api/          # Axios instance + all API calls
+├── components/   # Reusable UI components
+├── pages/        # Co-located page folders (index + subcomponents + custom hook)
+├── store/        # Zustand stores (auth, test, question)
+├── types/        # TypeScript interfaces
+└── utils/        # localStorage ID cache
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Key Decisions
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- **Zustand over Context** — components only re-render when their subscribed slice changes
+- **Co-located folders** — each page has its own folder, keeping files under ~80 lines
+- **Custom hooks** — all page logic lives in `useQuestions.ts`, `usePreview.ts` etc, keeping `index.tsx` clean
+- **localStorage ID cache** — API returns names in GET but needs UUIDs in POST, so IDs are cached after creation to make edit mode work
+
+---
+
+## API Notes
+
+The API had undocumented constraints discovered during testing:
+
+- `subject` field required in `questions/bulk` (not in docs)
+- `difficulty` only accepts `easy`, `medium`, `hard` (not `difficult`)
+- `tests` type enum values not documented — emailed Preproute for clarification
+
+---
+
+## Setup
+
+```bash
+npm install
+npm run dev
 ```

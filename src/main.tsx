@@ -4,7 +4,7 @@ import "./index.css";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import { useAuthStore } from "./store/authStore.ts";
-import Login from "./pages/Login.tsx";
+import Login from "./pages/login/index.tsx";
 import CreateTest from "./pages/createTest/index.tsx";
 import Questions from "./pages/questions/index.tsx";
 import Preview from "./pages/preview/index.tsx";

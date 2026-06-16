@@ -1,5 +1,3 @@
-import React from "react";
-
 interface QuestionHeadProps {
   saving: boolean;
   onSaveAndPreview: () => void;

@@ -55,7 +55,6 @@ export default function Questions() {
         totalQuestions={currentTest.total_questions}
         onEdit={handleEditQuestion}
         onDelete={handleDeleteQuestion}
-        // onAddQuestion={scrollToForm}
       />
 
       <main className="flex-1 flex flex-col overflow-y-auto">

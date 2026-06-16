@@ -49,6 +49,4 @@ api.interceptors.response.use(
   },
 );
 
-export const USE_MOCK = false;
-
 export default api;

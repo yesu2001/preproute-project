@@ -50,7 +50,7 @@ const Preview = () => {
         </button>
       </div>
 
-      <MetaTestCard test={currentTest} showEditButton />
+      <MetaTestCard test={currentTest} />
 
       {/* Questions list */}
       {loadingQuestions ? (

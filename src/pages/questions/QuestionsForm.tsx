@@ -107,6 +107,7 @@ export default function QuestionsForm({
     resolveTopicOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [test]);
+
   const {
     register,
     handleSubmit,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { Bell, ChevronDown, Menu, X } from "lucide-react";
@@ -60,7 +60,7 @@ const ProtectedRoute = () => {
 
   return (
     <div className="flex min-h-screen text-slate-800 antialiased font-sans">
-      {/* --- DESKTOP SIDEBAR (Hidden on mobile screens, matches layout theme) --- */}
+      {/* --- DESKTOP SIDEBAR --- */}
       <aside className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between hidden md:flex fixed h-full z-20">
         <div className="p-6">
           <img src="/src/assets/logo.png" alt="Logo" className="h-8 w-auto" />
@@ -94,7 +94,7 @@ const ProtectedRoute = () => {
         </div>
       </aside>
 
-      {/* --- MOBILE SIDEBAR DRAWER OVERLAY (Triggers on click) --- */}
+      {/* --- MOBILE SIDEBAR DRAWER --- */}
       {isMobileMenuOpen && (
         <div
           className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 md:hidden"
@@ -119,7 +119,6 @@ const ProtectedRoute = () => {
             </div>
             <nav className="mt-10 space-y-1">
               {navItems.map((item) => {
-                // const Icon = item.icon;
                 const isActive = isPathActive(item.path);
                 return (
                   <button
@@ -135,7 +134,6 @@ const ProtectedRoute = () => {
                     }`}
                   >
                     {item.icon}
-                    {/* <Icon size={18} /> */}
                     {item.label}
                   </button>
                 );
@@ -145,11 +143,9 @@ const ProtectedRoute = () => {
         </div>
       )}
 
-      {/* --- MAIN INTERACTIVE VIEW AREA CONTROLLER --- */}
+      {/* --- MAIN VIEW AREA --- */}
       <div className="flex-1 flex flex-col min-w-0 md:pl-64">
-        {/* TOP INTERACTIVE NAVBAR (Shared avatar and indicators area) */}
         <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-6 md:px-8 z-10 sticky top-0">
-          {/* Hamburger Menu icon toggle for touch devices */}
           <button
             onClick={() => setIsMobileMenuOpen(true)}
             className="p-2 -ml-2 text-slate-500 hover:text-slate-800 md:hidden"
@@ -157,9 +153,7 @@ const ProtectedRoute = () => {
             <Menu size={24} />
           </button>
 
-          <div className="hidden md:block">
-            {/* Structural spacing filler */}
-          </div>
+          <div className="hidden md:block"></div>
 
           <div className="flex items-center gap-4">
             <button className="p-2 text-slate-400 hover:text-slate-600 relative rounded-full hover:bg-slate-50">

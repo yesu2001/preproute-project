@@ -1,4 +1,4 @@
-import { ChevronLeft, Edit2, Plus, Trash2 } from "lucide-react";
+import { ChevronLeft, Edit2, Trash2 } from "lucide-react";
 import type { Question } from "../../types";
 
 interface QuestionListProps {
@@ -7,7 +7,6 @@ interface QuestionListProps {
   totalQuestions: number;
   onEdit: (index: number) => void;
   onDelete: (index: number) => void;
-  // onAddQuestion: () => void;
 }
 
 export default function QuestionsTab({

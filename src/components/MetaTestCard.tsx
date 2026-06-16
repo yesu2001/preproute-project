@@ -1,10 +1,4 @@
-import {
-  Pen,
-  Timer,
-  FileQuestion,
-  ChartColumnBig,
-  FileQuestionMark,
-} from "lucide-react";
+import { Pen, Timer, ChartColumnBig, FileQuestionMark } from "lucide-react";
 import type { Test } from "../types";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -17,20 +11,10 @@ import type { Subject, Topic, SubTopic } from "../types";
 
 interface MetaTestCardProps {
   test: Test;
-  showEditButton?: boolean;
 }
 
-const difficultyColors: Record<string, string> = {
-  easy: "bg-emerald-500",
-  medium: "bg-amber-500",
-  hard: "bg-rose-500",
-  difficult: "bg-rose-500",
-};
-
-const MetaTestCard = ({ test, showEditButton = true }: MetaTestCardProps) => {
+const MetaTestCard = ({ test }: MetaTestCardProps) => {
   const navigate = useNavigate();
-  const diffColor =
-    difficultyColors[test.difficulty?.toLowerCase()] ?? "bg-slate-500";
   const [subjectLabel, setSubjectLabel] = useState<string>(test.subject || "");
   const [topicLabels, setTopicLabels] = useState<string[]>([]);
   const [subTopicLabels, setSubTopicLabels] = useState<string[]>([]);
@@ -153,7 +137,6 @@ const MetaTestCard = ({ test, showEditButton = true }: MetaTestCardProps) => {
         </div>
       </div>
 
-      {/* Structured Stats Pills Matrix */}
       <button
         onClick={() => navigate(`/test/${test.id}/edit`)}
         className="absolute top-5 right-5 p-1 text-slate-400 hover:text-slate-600 transition-colors"
