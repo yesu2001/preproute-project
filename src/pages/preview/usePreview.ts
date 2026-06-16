@@ -5,7 +5,6 @@ import { useQuestionStore } from "../../store/questionStore";
 import { getTestById, getStoredQuestions } from "../../utils/storage";
 import { updateTest } from "../../api/tests";
 import { fetchBulkQuestions } from "../../api/questions";
-import { USE_MOCK } from "../../api/axios";
 
 export const usePreview = () => {
   const { id: testId } = useParams<{ id: string }>();
@@ -23,37 +22,19 @@ export const usePreview = () => {
   }, [testId]);
 
   const loadData = async () => {
-    // Load test
-    if (!currentTest || currentTest.id !== testId) {
-      const test = getTestById(testId!);
-      if (!test) {
-        navigate("/dashboard");
-        return;
-      }
-      setCurrentTest(test);
-    }
-
-    // Load questions — from API if live, localStorage if mock
     setLoadingQuestions(true);
     try {
-      if (!USE_MOCK) {
-        // Try fetching from API using question IDs stored on the test
-        const test = getTestById(testId!);
-        const questionIds = test?.questions ?? [];
-        if (questionIds.length > 0) {
-          const res = await fetchBulkQuestions(questionIds);
-          setQuestions(res.data);
-        } else {
-          // Fall back to localStorage (questions saved during this session)
-          const stored = getStoredQuestions(testId!);
-          setQuestions(stored);
-        }
+      const test = getTestById(testId!);
+      const questionIds = test?.questions ?? [];
+      if (questionIds.length > 0) {
+        const res = await fetchBulkQuestions(questionIds);
+        setQuestions(res.data);
       } else {
+        // Fall back to localStorage (questions saved during this session)
         const stored = getStoredQuestions(testId!);
         setQuestions(stored);
       }
     } catch {
-      // If API fetch fails, fall back to localStorage
       const stored = getStoredQuestions(testId!);
       setQuestions(stored);
     } finally {
