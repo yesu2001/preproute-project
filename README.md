@@ -2,9 +2,7 @@
 
 A 5-page test management application built as part of the Preproute Assignment.
 
-**Live Demo:** [Add Vercel URL]  
-**Walkthrough Video:** [Add video link]
-
+**Live Demo:** [https://preproute-project.vercel.app/login]
 **Login credentials:**
 
 - Username: `vedant-admin`
@@ -62,7 +60,7 @@ The API had undocumented constraints discovered during testing:
 
 - `subject` field required in `questions/bulk` (not in docs)
 - `difficulty` only accepts `easy`, `medium`, `hard` (not `difficult`)
-- `tests` type enum values not documented — emailed Preproute for clarification
+- `tests` type enum values not documented
 
 ---
 
