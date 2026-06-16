@@ -51,7 +51,7 @@ export default function Login() {
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] p-2 md:p-4">
       <div className="hidden w-1/2 flex-col items-center justify-center relative md:flex">
-        <img src="/src/assets/login-bg.png" alt="login illustration" />
+        <img src="/assets/login-bg.png" alt="login illustration" />
       </div>
 
       <div className="w-full md:w-1/2">
@@ -59,7 +59,7 @@ export default function Login() {
           {/* Logo */}
           <div className="mb-10 flex items-center gap-1">
             <img
-              src="/src/assets/logo.png"
+              src="/assets/logo.png"
               alt="PrepRoute Logo"
               className="h-8 w-auto"
             />
